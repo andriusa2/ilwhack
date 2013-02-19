@@ -18,6 +18,12 @@ class DataParser extends Core{
 	public function tagsByItem($item_id){
 		return $this->withQID("selectTagsByItem",$item_id);
 	}
+	public function randomTags(){
+		return $this->withQID("selectRandomTags","");
+	}
+	public function allItems(){
+		return $this->withQID("selectAllItems","");
+	}
 };
 $puller = new DataParser();
 
@@ -28,11 +34,15 @@ if(isset($_GET['get']))
 		if(isset($_GET['tag_id'])){
 			$int = (int)($_GET['tag_id']);
 			echo $puller->itemsByTag($int);
+		} else {
+			echo $puller->allItems();
 		}
 	} else if ($_GET['get'] == "tags"){
 		if(isset($_GET['item_id'])){
 			$int = (int)($_GET['item_id']);
 			echo $puller->tagsByItem($int);
+		} else {
+			echo $puller->randomTags();		
 		}	
 	}
 ?>

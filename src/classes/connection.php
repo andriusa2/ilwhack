@@ -21,7 +21,7 @@ class Database{
 		if (!$this->result) $this->Error(QUERY_ERROR);
 	}
 	public function fetch(){
-		return $this->result->fetch_array();
+		return $this->result->fetch_assoc();
 	}
 	public function clean(){
 		return $this->db->real_escape_string($str);
