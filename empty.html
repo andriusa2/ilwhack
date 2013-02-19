@@ -11,9 +11,8 @@
 	<body>
 		<div class="container-narrow">
 			<div class="jumbotron">
-        		<h1>Football, good choice!</h1>
-        		<div id="map_canvas"></div>
-        		<h2><a href="index.html">Something else for today?</a></h2>        		        	
+        		<h1>Nothing found :(</h1>
+        		<h2><a id="tryagain" href="index.html">Lets try again?</a></h2>        		        	
 			</div>
 			
 			<p class="text-center"><small>ilwhack project by Andrius Žiūkas, Martynas Melninkas and Jakov Šmelkin</small></p>
@@ -24,17 +23,8 @@
 		
 		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 		<script type="text/javascript" src="js/bootstrap.js" ></script>
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-		<script type="text/javascript" src="js/gmap3.js"></script>
 		<script type="text/javascript" charset="utf-8">
-			$("#map_canvas").gmap3({
-				map:{
-					options:{
-						center: [55.938056, -3.199889],
-						zoom: 12
-					}
-				},
-			});
+				$(document).ready(function() { $('body').hide(), $('body').fadeIn()});		
 		</script>
 	</body>
 </html>

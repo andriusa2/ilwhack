@@ -78,7 +78,8 @@
 		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 		<script type="text/javascript" src="js/bootstrap.js" ></script>
 		<script type="text/javascript" src="js/jquery.tagcloud.js"></script>
-		<script type="text/javascript" charset="utf-8">			
+		<script type="text/javascript" charset="utf-8">
+				$(document).ready(function() { $('body').hide(), $('body').fadeIn()});			
 				$.fn.tagcloud.defaults = {
 					size: {start: 22, end: 40, unit: 'pt'},
 					color: {start: '#cde', end: '#f52'}
