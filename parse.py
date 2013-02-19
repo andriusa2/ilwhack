@@ -6,6 +6,8 @@
 import xml.etree.ElementTree as ET
 
 import urllib2 as URL
+
+import mysql_test as SQL
 # http://www.edinburgh.gov.uk/api/directories/25/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1
 
 #useful ids (http://www.edinburgh.gov.uk/directories)
@@ -170,6 +172,16 @@ def parse_edi_gov( dirID ):
 	s = "http://www.edinburgh.gov.uk/api/directories/%d/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1" % (dirID,)
 	print "Parsing XML from url at (",s,")"
 	parseXML_URL( s, True)
+
+def dumpToDB():
+	make_assoc()
+	db = SQL.getConnection()
+	SQL.resetDB( db )
+	SQL.insertItems( items, db )
+	SQL.insertTags( assoc_tags, db )
+	SQL.insertRels( rels, db )
+	SQL.closeDB( db )
+
 # parse_file("tmp.xml")
 #useful ids (http://www.edinburgh.gov.uk/directories)
 #25 - sports/recreation
@@ -179,10 +191,8 @@ def parse_edi_gov( dirID ):
 #24 - community centres?
 #110 - monuments in parks...
 
-# parse_edi_gov( 25 )
-# parse_edi_gov( 35 )
+parse_edi_gov( 25 )
+parse_edi_gov( 35 )
 # parse_edi_gov( 105 )
 # make_assoc()
-
-import mysql_test
 
