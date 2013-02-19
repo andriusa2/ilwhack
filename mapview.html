@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>DoEd</title>
+		<link rel="stylesheet" href="css/bootstrap.css" />
+		<link rel="stylesheet" href="css/bootstrap_responsive.css" />
+		<link rel="stylesheet" href="css/layout.css" />
+	</head>
+	<body>
+		<div class="container-narrow">
+			<div class="jumbotron">
+        		<h1>And so, football it is!</h1>
+        		<div id="map_canvas"></div>
+        		<h2><a href="index.html">Something else for today?</a></h2>        		        	
+			</div>
+			
+			<p class="text-center"><small>ilwhack project by Andrius Žiūkas, Martynas Melninkas and Jakov Šmelkin</small></p>
+			
+		</div>
+		
+		
+		
+		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="js/bootstrap.js" ></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="js/gmap3.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			$("#map_canvas").gmap3({
+				map:{
+					options:{
+						center: [55.953056, -3.188889],
+						zoom: 12
+					}
+				},
+			});
+		</script>
+	</body>
+</html>
