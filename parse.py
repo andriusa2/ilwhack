@@ -5,6 +5,7 @@
 # simple XML parser for data feeds
 import xml.etree.ElementTree as ET
 
+import urllib2 as URL
 # http://www.edinburgh.gov.uk/api/directories/25/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1
 
 #useful ids (http://www.edinburgh.gov.uk/directories)
@@ -30,6 +31,9 @@ rels = []
 
 MAX_TAG_LEN = 25
 
+
+#DEBUG:
+keysID = []
 #
 # TODO consider "deleting" a word from tag
 #      instead of marking whole tag as invalid
@@ -63,7 +67,7 @@ def clean_tags() :
 	print "sz after: ", len(tags)
 
 
-def parse_file( filename ):
+def parse_file( filename, dbg = False ):
 	tree = ET.parse( filename )
 
 	# for all entries
@@ -73,18 +77,33 @@ def parse_file( filename ):
 		# add all fields to a dict
 		for field in entry.iter("field") :
 			items[-1][field.get("name")] = unicode(field.text)
-		
 		# I don't use this text anywhere, so lets keep it simple
+		if "Activities" not in items[-1].keys():
+			break
 		items[-1]["Activities"] = items[-1]["Activities"].lower()
-
+		t = items[-1]["Location"].split(',')
+		if (" " not in items[-1]["Location"] and len(t) == 2) :
+			items[-1]["Location"] = str(float(t[0]))[0:9] + "," + str(float(t[1]))[0:9]
+		else:
+			items[-1]["Location"] = ""
+		if items[-1]["Location"] == "" :
+			print "WARNING: ", items[-1]["Name"], " doesn't have location coords"
+			print "Falling back to Address/postcode lookup/gMaps API"
+			#TODO lat/long extraction
+			print "WARNING: No location data, deleting record for ", items[-1]["Name"]
+			del items[-1]
+			continue
 		# try to add all tags (separated by newlines in activities)
 		for tag in items[-1]["Activities"].split('\n') :
 			# sometimes they try to name few activities
 			for t in tag.split(',') :
 				t = t.strip()
+				if (len(t) < 3):
+					continue
 				if (t not in tags):
 					tags.add(t)
-
+	if dbg:
+		keysID.append(items[-1].keys())
 	# remove too long/complex tags
 	clean_tags()
 
@@ -142,6 +161,28 @@ def print_items( items ) :
 	for item in items:
 		print "* ", item["Name"]
 
-parse_file("tmp.xml")
-make_assoc()
+# TODO pagination
+def parseXML_URL( url, dbg = False ):
+	u = URL.urlopen(url)
+	parse_file( u, dbg )
+
+def parse_edi_gov( dirID ):
+	s = "http://www.edinburgh.gov.uk/api/directories/%d/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1" % (dirID,)
+	print "Parsing XML from url at (",s,")"
+	parseXML_URL( s, True)
+# parse_file("tmp.xml")
+#useful ids (http://www.edinburgh.gov.uk/directories)
+#25 - sports/recreation
+#105 - day services and lunch clubs
+#11 - museums and galleries
+#35 - outdoor education providers
+#24 - community centres?
+#110 - monuments in parks...
+
+# parse_edi_gov( 25 )
+# parse_edi_gov( 35 )
+# parse_edi_gov( 105 )
+# make_assoc()
+
+import mysql_test
 

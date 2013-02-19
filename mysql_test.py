@@ -17,22 +17,22 @@ def resetDB( db ):
 	c = db.cursor()
 	c.execute("DROP TABLE IF EXISTS tags")
 	c.execute("""CREATE TABLE tags (
-			id INT,
-			tag VARCHAR(25),
+			id INT NOT NULL,
+			tag VARCHAR(25) NOT NULL,
 			PRIMARY KEY(id)
 			)""")
 	c.execute("DROP TABLE IF EXISTS items")
 	c.execute("""CREATE TABLE items (
-			id INT,
-			name TINYTEXT,
-			location VARCHAR(20),
+			id INT NOT NULL,
+			name TINYTEXT NOT NULL,
+			location VARCHAR(20) NOT NULL,
 			PRIMARY KEY(id)
 			)""")
 	c.execute("DROP TABLE IF EXISTS relations")
 	c.execute("""CREATE TABLE relations (
-			id INT,
-			tagID INT,
-			itemID INT,
+			id INT NOT NULL AUTO_INCREMENT,
+			tagID INT NOT NULL,
+			itemID INT NOT NULL,
 			PRIMARY KEY(id),
 			INDEX(tagID)
 			)""")
@@ -59,10 +59,26 @@ def insertItems( items, db ):
 	db.commit()
 	c.close()
 
+def insertTags( aTags, db ):
+	c = db.cursor()
+	for tag in aTags.keys():
+		c.execute( "INSERT INTO tags(id, tag) VALUES(%s, %s)",
+			(aTags[tag], tag,) )
+	db.commit()
+	c.close()
+
+def insertRels( relations, db ):
+	c = db.cursor()
+	for rel in relations:
+		c.execute( "INSERT INTO relations(tagID, itemID) VALUES(%s, %s)", rel)
+	c.close()
+	db.commit()
+
+def insertRel( rel, db_cursor):
+	c = db_cursor
+	c.execute( "INSERT INTO relations(tagID, itemID) VALUES(%s, %s)", rel )
+
 def closeDB( db ):
+	db.commit()
 	db.close()
-
-db = getConnection()
-resetDB( db )
-
 
