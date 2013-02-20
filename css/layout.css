@@ -9,7 +9,7 @@
 
 /* Main marketing message and sign up button */
 .jumbotron {
-	margin: 40px 0;
+	/*margin: 40px 0;*/
 	text-align: center;
 }
 .jumbotron h1 {
@@ -28,6 +28,10 @@
 .jumbotron input {
 	font-size: 21px;
 	padding: 14px 24px;
+}
+
+#mapview, #empty{
+	display:none;
 }
 
 

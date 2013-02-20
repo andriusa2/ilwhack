@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>DoEd</title>
 		<link rel="stylesheet" href="css/bootstrap.css" />
-		<link rel="stylesheet" href="css/bootstrap_responsive.css" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.css" />
 		<link rel="stylesheet" href="css/layout.css" />
 	</head>
 	<body>
@@ -13,7 +13,7 @@
 			<div class="jumbotron" id="selection">
         		<h1>What would you like to do today?</h1>
 			
-				<div id="tagcloud"></div>
+				<div id="tagcloud"><a href="#" rel=3>AAAAAA</a></div>
       		
         		<h2>or</h2>
         		
@@ -28,12 +28,12 @@
 			<div class="jumbotron" id="mapview">
         		<h1>Football, good choice!</h1>
         		<div id="map_canvas"></div>
-        		<h2><a href="index.html">Something else for today?</a></h2>        		        	
+        		<h2><a id="retry" href="#">Something else for today?</a></h2>        		        	
 			</div>
 			
 			<div class="jumbotron" id="empty">
         		<h1>Nothing found :(</h1>
-        		<h2><a id="tryagain" href="index.html">Lets try again?</a></h2>        		        	
+        		<h2><a id="tryagain" href="#">Lets try again?</a></h2>        		        	
 			</div>
 			
 			<p class="text-center"><small>ilwhack project by Andrius Žiūkas, Martynas Melninkas and Jakov Šmelkin</small></p>
@@ -46,7 +46,6 @@
 		<script type="text/javascript" src="js/jquery.tagcloud.js"></script>
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 		<script type="text/javascript" src="js/gmap3.js"></script>
-		<script type="text/javascript" charset="utf-8"src="js/index.js"></script>	
-		<script type="text/javascript" src="js/core.js"></script>
+		<script type="text/javascript" charset="utf-8"src="js/index.js"></script>
 	</body>
 </html>
