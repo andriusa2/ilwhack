@@ -177,14 +177,14 @@ def make_assoc():
 	rels = []
 	# create dict of tag=>id
 	for tag in sorted(tagsList) :
-		assoc_tags[tag] = i
+		assoc_tags[tag] = i + 1
 		i += 1
 	# create all relations for tagID=>itemID
 	# lets keep it sorted
 	for tag in sorted(assoc_tags.keys(), key=lambda t : assoc_tags[t]) :
 		for i in range(len(items)) :
 			if (tag in items[i]["Tags"]) :
-				rels.append( (assoc_tags[tag], i) )
+				rels.append( (assoc_tags[tag], i + 1) )
 
 
 # testing method
@@ -200,7 +200,7 @@ def get_items( tag ):
 	for (tID, iID) in rels :
 		if (tagID < tID): break
 		if (tagID == tID):
-			retval.append(items[iID])
+			retval.append(items[iID-1])
 	return retval
 
 # testing method

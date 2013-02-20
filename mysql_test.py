@@ -20,16 +20,14 @@ def resetDB( db, defaultKeys = ["Name", "Email", "Address"] ):
 			id INT NOT NULL,
 			tag VARCHAR(25) NOT NULL,
 			PRIMARY KEY(id)
-			)
-			AUTO_INCREMENT=0""")
+			)""")
 	c.execute("DROP TABLE IF EXISTS items")
 	c.execute("""CREATE TABLE items (
 			id INT NOT NULL AUTO_INCREMENT,
 			name TINYTEXT NOT NULL,
 			location VARCHAR(20) NOT NULL,
 			PRIMARY KEY(id)
-			)
-			AUTO_INCREMENT=0""")
+			)""")
 	c.execute("DROP TABLE IF EXISTS relations")
 	c.execute("""CREATE TABLE relations (
 			id INT NOT NULL AUTO_INCREMENT,
@@ -37,16 +35,14 @@ def resetDB( db, defaultKeys = ["Name", "Email", "Address"] ):
 			itemID INT NOT NULL,
 			PRIMARY KEY(id),
 			INDEX(tagID)
-			)
-			AUTO_INCREMENT=0""")
+			)""")
 	c.execute("DROP TABLE IF EXISTS info")
 	query = """CREATE TABLE info (
 			id INT NOT NULL AUTO_INCREMENT,
 			"""
 	query = "".join([query,
 			",\n".join([name + " " + t +" NOT NULL" for name, t in defaultKeys.values()]),
-			",\nPRIMARY KEY(id))",
-			"\nAUTO_INCREMENT=0"])
+			",\nPRIMARY KEY(id))"])
 	c.execute(query)
 	c.close()
 	db.commit()
