@@ -4,23 +4,13 @@
 
 # simple XML parser for data feeds
 import xml.etree.ElementTree as ET
-
 import urllib2 as URL
 
 import mysql_test as SQL
-# http://www.edinburgh.gov.uk/api/directories/25/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1
 
-#useful ids (http://www.edinburgh.gov.uk/directories)
-#25 - sports/recreation
-#105 - day services and lunch clubs
-#11 - museums and galleries
-#35 - outdoor education providers
-#24 - community centres?
-#110 - monuments in parks...
-#noxml:http://www.edinburgh.gov.uk/directory_record/221327/youth_work_opportunities_in_edinburgh
-
+tagsSet = set()
 # tag set, used for initial tag cloud creation
-tags = set()
+tagsList = []
 
 # tags associated with unique ids
 assoc_tags = dict()
@@ -32,7 +22,7 @@ items = []
 rels = []
 
 MAX_TAG_LEN = 25
-
+MIN_AVG_LEN = 5
 
 #DEBUG:
 keysID = []
@@ -41,90 +31,159 @@ keysID = []
 #      instead of marking whole tag as invalid
 #
 
+badWords = [")", " etc", "including", "e.g."]
+noiseChars = [" & ", " x ", " / ", "on "]
+
+defaultKeys =  {'Activities' : ('Activities','TEXT'),
+				'Name' : ('Name','TINYTEXT'),
+				'Timetables' : ('TimeTables','TINYTEXT'),
+				'Telephone' : ('Telephone','TINYTEXT'),
+				'More information' : ('Details','TINYTEXT'),
+				'Address' : ('Address','TINYTEXT'),
+				'Prices' : ('Prices','TINYTEXT'),
+				'Email' : ('Email','TINYTEXT'),
+				'Location' : ('Location','TINYTEXT')}
+
+# replace works on only one char
+# translate does not delete on unicode strings
+# yay...
+def remChars(s, chs) :
+	for c in chs:
+		s = s.replace(c, '')
+	return s
+
+def remBad(s, bads) :
+	for bad in bads:
+		s = s.replace(bad, '')
+	return s.strip()
+
+def avgWordLen(s) :
+	return len(s)/(s.count(" ") + 1)
+
 def clean_tags() :
-	print "sz before: ", len(tags)
+	global tagsList
+	print "Tag cleanup started"
+	print "Amount of tags before the purge: ", len(tagsList)
 	del_list = []
-	# should make this moar optimal
-	for sTag in tags :
-		for lTag in tags :
-			if len(sTag) < len(lTag) :
-				if (sTag in lTag) :
-					del_list.append(lTag)
 
-	# delete too long or improper tags
-	for tag in tags:
-		if (len(tag) > MAX_TAG_LEN):
-			print "Tag rejected for its length: " + tag
-		elif ":" in tag :
-			print "Tag rejected for having : in itself: " + tag
-		else:
-			continue;
-		del_list.append(tag)
+	# removing "bad" words
+	tagsList = [remBad(tag, badWords) for tag in tagsList]
+
+	# sanity check for some random cases (e.g. and much more)
+	for tag in tagsList :
+		ttag = remBad(tag, noiseChars)
+		if (ttag.count(" ") > 1 and avgWordLen(ttag) < MIN_AVG_LEN) :
+			print "DBG: Removing tag `", tag, "`, assuming worthless for avglen"
+			del_list.append(tagsList.index(tag))
 	
-	# delete all rejects
-	for i in del_list :
-		if (i in tags) :
-			tags.remove(i)
+	# creating tag-comparison-friendly tags (no punctuation, whitespace,etc)
+	tags = [remChars(tag, "-().[];'\"?\t\r ") for tag in tagsList]
 
-	print "sz after: ", len(tags)
+	for sTag in tags :
+		if len(sTag) < 3 : # too short tag, something's wrong
+			continue
+		for lTag in tags :
+			if sTag is lTag :
+				continue
+			if len(sTag) <= len(lTag) :
+				if (sTag in lTag) :
+					# TODO: check word ratios before deleting tag
+					#       favour the tag with more hits
+					del_list.append(tags.index(lTag))
+					tags[tags.index(lTag)] = " "
+					continue
+	# delete all deemed tags from the end of the list
+	# so we don't screw up the indexes
+	for i in sorted(del_list, reverse=True) :
+		del tagsList[i]
+
+	tagsList.sort( key=len )
+	# delete too long tags TODO: split them up on read
+	br = 0
+	while (br < len(tagsList) ) :
+		if (len(tagsList[br]) > MAX_TAG_LEN):
+			break;
+		br += 1
+	if (br < len(tagsList)) :
+		del tagsList[br:]
+	
+	print "Amount of tags after the purge: ", len(tagsList)
 
 
-def parse_file( filename, dbg = False ):
+def parse_file( filename, dbg = False, defaultTags = "" ):
+	global tagsList
 	tree = ET.parse( filename )
-
 	# for all entries
 	for entry in tree.getroot().iter("entry") :
 		items.append( dict() )
 
 		# add all fields to a dict
+		# blah, unicode causes moar problems than it's worth
 		for field in entry.iter("field") :
 			items[-1][field.get("name")] = unicode(field.text)
-		# I don't use this text anywhere, so lets keep it simple
-		if "Activities" not in items[-1].keys():
-			break
-		items[-1]["Activities"] = items[-1]["Activities"].lower()
+
+		for field in defaultKeys :
+			if field not in items[-1] or items[-1][field] == None:
+				items[-1][field] = ""
+		if items[-1]['Timetables'] == "" and 'Opening hours' in items[-1].keys() :
+			items[-1]['Timetables'] = items[-1]['Opening hours']
+		items[-1]['Address'] = " ".join([items[-1]['Address'], items[-1]['Postcode']])
+
+		items[-1]["Tags"] = items[-1]["Activities"].lower()
+		items[-1]["Tags"].join(defaultTags)
+
 		t = items[-1]["Location"].split(',')
-		if (" " not in items[-1]["Location"] and len(t) == 2) :
+		# good enough
+		if (len(t) == 2) :
 			items[-1]["Location"] = str(float(t[0]))[0:9] + "," + str(float(t[1]))[0:9]
 		else:
-			items[-1]["Location"] = ""
-		if items[-1]["Location"] == "" :
-			print "WARNING: ", items[-1]["Name"], " doesn't have location coords"
-			print "Falling back to Address/postcode lookup/gMaps API"
-			#TODO lat/long extraction
+			items[-1]["Location"] = None
+
+		if items[-1]["Location"] == None :
 			print "WARNING: No location data, deleting record for ", items[-1]["Name"]
 			del items[-1]
 			continue
 		# try to add all tags (separated by newlines in activities)
-		for tag in items[-1]["Activities"].split('\n') :
+		for tag in items[-1]["Tags"].splitlines() :
 			# sometimes they try to name few activities
 			for t in tag.split(',') :
 				t = t.strip()
+				if (":" in t):
+					t = t[t.index(":")+1 : ]
+					t = t.strip()
+				if ("(" in t):
+					tmp = [i.strip().strip(")") for i in t.split("(")]
+					[tagsSet.add(d) for d in tmp if (len(d)>=3) and (d not in tagsSet)]
+					continue
 				if (len(t) < 3):
 					continue
-				if (t not in tags):
-					tags.add(t)
+				if (t not in tagsSet):
+					tagsSet.add(t)
 	if dbg:
 		keysID.append(items[-1].keys())
-	# remove too long/complex tags
-	clean_tags()
-
+	tagsList = list(tagsSet)
 # creates associated list of (tag, item) pairs
 # 
 # TODO this should be called every time `tags` set is changed
 #      maybe ditch the neat `in`?
 def make_assoc():
 	i = 0
+	global rels
+	# remove too long/complex tags
+	clean_tags()
+
 	assoc_tags.clear()
+	del rels
+	rels = []
 	# create dict of tag=>id
-	for tag in sorted(list(tags)) :
+	for tag in sorted(tagsList) :
 		assoc_tags[tag] = i
 		i += 1
 	# create all relations for tagID=>itemID
 	# lets keep it sorted
 	for tag in sorted(assoc_tags.keys(), key=lambda t : assoc_tags[t]) :
 		for i in range(len(items)) :
-			if (tag in items[i]["Activities"]) :
+			if (tag in items[i]["Tags"]) :
 				rels.append( (assoc_tags[tag], i) )
 
 
@@ -147,7 +206,7 @@ def get_items( tag ):
 # testing method
 def out_tags():
 	print "TagID\tTag"
-	for tag in sorted(list(tags)):
+	for tag in sorted(tagsList):
 		print assoc_tags[tag], "\t", tag
 
 # testing method
@@ -164,22 +223,23 @@ def print_items( items ) :
 		print "* ", item["Name"]
 
 # TODO pagination
-def parseXML_URL( url, dbg = False ):
+def parseXML_URL( url, dbg = False, defaultTags = "" ):
 	u = URL.urlopen(url)
-	parse_file( u, dbg )
+	parse_file( u, dbg, defaultTags )
 
-def parse_edi_gov( dirID ):
+def parse_edi_gov( dirID, defaultTags = "" ):
 	s = "http://www.edinburgh.gov.uk/api/directories/%d/entries.xml?api_key=de14fcd88efece2cf0bf335df1004f54&per_page=100&page=1" % (dirID,)
 	print "Parsing XML from url at (",s,")"
-	parseXML_URL( s, True)
+	parseXML_URL( s, True, defaultTags )
 
 def dumpToDB():
 	make_assoc()
 	db = SQL.getConnection()
-	SQL.resetDB( db )
+	SQL.resetDB( db, defaultKeys )
 	SQL.insertItems( items, db )
 	SQL.insertTags( assoc_tags, db )
 	SQL.insertRels( rels, db )
+	SQL.insertInfo( items, defaultKeys, db)
 	SQL.closeDB( db )
 
 # parse_file("tmp.xml")
@@ -193,6 +253,14 @@ def dumpToDB():
 
 parse_edi_gov( 25 )
 parse_edi_gov( 35 )
+inp = raw_input("Do you want to dump the data to database (recreates all the tables)?(Yn)")
+inp = inp.lower()
+if (inp == "y"):
+	dumpToDB()
+elif (inp == "n"):
+	print "Okay..."
+else:
+	print "'Maybe' means 'No'!"
 # parse_edi_gov( 105 )
 # make_assoc()
 
