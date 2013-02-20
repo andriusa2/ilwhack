@@ -27,7 +27,7 @@ class DataParser extends Core{
 };
 $puller = new DataParser();
 
-parse_str(implode('&', array_slice($argv, 1)), $_GET);
+//parse_str(implode('&', array_slice($argv, 1)), $_GET);
 
 if(isset($_GET['get']))
 	if ($_GET['get'] == "items"){
