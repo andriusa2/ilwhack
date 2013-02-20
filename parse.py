@@ -121,12 +121,18 @@ def parse_file( filename, dbg = False, defaultTags = "" ):
 		# blah, unicode causes moar problems than it's worth
 		for field in entry.iter("field") :
 			items[-1][field.get("name")] = unicode(field.text)
-
+		if "Name" not in items[-1].keys() :
+			items[-1]["Name"] = unicode(entry.find("title").text)
 		for field in defaultKeys :
 			if field not in items[-1] or items[-1][field] == None:
 				items[-1][field] = ""
+		if "Postcode" not in items[-1] :
+			items[-1]["Postcode"] = ""
+		if "Location map" in items[-1] :
+			items[-1]["Location"] = items[-1]["Location map"]
 		if items[-1]['Timetables'] == "" and 'Opening hours' in items[-1].keys() :
 			items[-1]['Timetables'] = items[-1]['Opening hours']
+
 		items[-1]['Address'] = " ".join([items[-1]['Address'], items[-1]['Postcode']])
 
 		items[-1]["Tags"] = items[-1]["Activities"].lower()
@@ -134,7 +140,7 @@ def parse_file( filename, dbg = False, defaultTags = "" ):
 
 		t = items[-1]["Location"].split(',')
 		# good enough
-		if (len(t) == 2) :
+		if (len(t) == 2 and " " not in items[-1]["Location"]) :
 			items[-1]["Location"] = str(float(t[0]))[0:9] + "," + str(float(t[1]))[0:9]
 		else:
 			items[-1]["Location"] = None
@@ -251,8 +257,9 @@ def dumpToDB():
 #24 - community centres?
 #110 - monuments in parks...
 
-parse_edi_gov( 25 )
+parse_edi_gov( 25, "\nSport\nRecreation" )
 parse_edi_gov( 35 )
+parse_edi_gov( 110, "\nMonuments\nSightseeing" )
 inp = raw_input("Do you want to dump the data to database (recreates all the tables)?(Yn)")
 inp = inp.lower()
 if (inp == "y"):
