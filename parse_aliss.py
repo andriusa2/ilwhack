@@ -38,6 +38,7 @@ def fixKeys( items ) :
 			[ j[0:9] for j in i["locations"].split(", ") ] )
 		i["tags"] = remChars("".join(i["tags"]),nontagChars)
 		i["description"] = i["description"]#.encode("utf-8")
+		i["origin"] = "ALISS"
 	return items
 
 def fixItems( items ) :

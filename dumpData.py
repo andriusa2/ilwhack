@@ -12,7 +12,8 @@ alissTranslation = {
 				'locationnames' : 'Address',
 				'uri' : 'web',
 				'tags' : 'tags',
-				'locations' : 'Location'
+				'locations' : 'Location',
+				'origin' : 'origin'
 				}
 # there is more translation done inside edbra parser...
 edbraTranslation = {
@@ -24,12 +25,14 @@ edbraTranslation = {
 				'Location' : 'Location',
 				'Email' : 'Email',
 				'Telephone' : 'Phone',
-				'tags' : 'tags'
+				'tags' : 'tags',
+				'origin' : 'origin'
 				}
 
 
 # keys for DB construction/insertation/stuff
 dbKeys =  {'Description' : ('description','TEXT'),
+			'shortName' : ('shortName','TINYTEXT'),
 			'Name' : ('name','TINYTEXT'),
 			#'Timetables' : ('Timetables','TINYTEXT'),
 			'Phone' : ('phone','TINYTEXT'),
@@ -37,9 +40,9 @@ dbKeys =  {'Description' : ('description','TEXT'),
 			'Address' : ('address','TINYTEXT'),
 			#'Prices' : ('Prices','TINYTEXT'),
 			'Email' : ('email','TINYTEXT'),
-			'Location' : ('location','TINYTEXT')}
+			'Location' : ('location','TINYTEXT'),
+			'origin' : ('origin','TINYTEXT')}
 defaultKeys = {key : "" for key,_ in dbKeys.items()}
-
 nontagChars = "\n\r\t _-&%().,/?\\[]"
 def remChars(s, chs) :
 	for c in chs:
@@ -57,6 +60,8 @@ def fillMissing( items, keys ) : #cba to use dictview
 				{key:val for key, val in keys.items() \
 						if key not in item.keys()}
 			) for item in items]
+def fixNames( items ) :
+	return [item.update({"shortName":item["Name"].split("(")[0].strip()}) for item in items]
 
 def rmDups( items ) :
 	# removing items based on their location
@@ -131,7 +136,7 @@ if (doALISS) :
 	print "Done"
 	print '-' * 16
 fillMissing( items, defaultKeys )
-
+fixNames( items )
 rels = make_assoc( tags, items )
 inp = raw_input("Do you want to dump all this data to DB?\nNOTE: current data will be purged! (Y/N): ")
 if (inp.lower()[0] == 'y'):

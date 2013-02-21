@@ -27,6 +27,18 @@ class DataParser extends Core{
 	public function singleTag($id){
 		return json_encode($this->qq->selectById('tag','tags',$id));
 	}
+	public function tagsByQuery($query){
+		$res = array();
+		foreach($query as $in_tag){
+			$tag = $this->db->clean($in_tag);
+			if (strlen($tag) < 3) continue;
+			$this->db->RunQuery(sprintf($this->db->qArr["selectTagsLikeQuery"],$tag));
+			while ($row = $this->db->fetch()){
+				$res [] = $row;
+			}
+		}
+		return json_encode($res);
+	}
 };
 $puller = new DataParser();
 
@@ -47,6 +59,11 @@ if(isset($_GET['get']))
 		} else if(isset($_GET['id'])){
 			$int = (int)($_GET['id']);
 			echo $puller->singleTag($int);
+		} else if(isset($_GET['query'])){
+			$query = explode(',',$_GET['query']);
+			$query = array_map(function($str){return trim($str);},$query);
+			$query = array_map(function($str){return strtolower($str);},$query);
+			echo $puller->tagsByQuery($query);
 		} else {
 			echo $puller->randomTags();		
 		}	
