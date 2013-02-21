@@ -48,19 +48,6 @@ function getItems(id){
 		return resultDict;
 	}
 }
-function parseItems(resultDict, data){
-	for (var i = 0; i< data.length; i++){
-		var coords = data[i].location.split(',').map(parseFloat);
-		resultDict.push({
-			latLng: coords,
-			data:{
-				id: data[i].id,
-				shortName: data[i].shortName,
-			},
-		});
-	}
-	return resultDict;
-}
 //Function for adding empty markers to edinburgh
 function addDefaultMarkers(resultDict){
 	resultDict.push({
@@ -82,12 +69,7 @@ function addDefaultMarkers(resultDict){
 function drawMap(resultDict){
 	resultDict=addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
-		map:{
-			options:{
-				center: [55.938056, -3.199889],
-				zoom: 12
-			}
-		},
+		map:{},
 		marker:{
 			values:resultDict,
 			events:{
@@ -101,7 +83,10 @@ function drawMap(resultDict){
 						$(this).gmap3({
 							infowindow:{
 								anchor:marker, 
-								options:{content: context.data['shortName']+"<br/><b>Click on the marker to see more</b>"}
+								options:{
+									content: context.data['shortName']+"<br/><b>Click on the marker to see more</b>",
+									disableAutoPan: true,
+								}
 							}
 						});
 					}
@@ -118,8 +103,6 @@ function drawMap(resultDict){
 				},
 			},
 		},
-	});
-	$("#map_canvas").gmap3({
 		autofit:{},
 	});
 }
@@ -133,7 +116,9 @@ function selectTags(ids){
 	resultDict = unique(resultDict);
 	goodChoice(ids);
 	$("#selection").slideUp(500);
-	$("#mapview").delay(600).slideDown(500, drawMap(resultDict));
+	$("#mapview").slideDown(500);
+	drawMap(resultDict);
+	
 }
 
 //Friendly success message
