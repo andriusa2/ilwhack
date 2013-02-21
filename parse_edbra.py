@@ -118,6 +118,8 @@ def fixItem( item, title, defTags ) :
 	item['Address'] = " ".join([item['Address'], item['Postcode']])
 	item["tags"] = item["Activities"].lower()
 	item["tags"] += defTags
+	if " " in item["More information"] :
+		item["More information"] = ""
 	for field in item.keys() :
 		if item[field] == None or item[field] == u'None':
 			item[field] = ""
