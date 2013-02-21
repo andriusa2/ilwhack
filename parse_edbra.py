@@ -35,7 +35,7 @@ keysID = []
 #      instead of marking whole tag as invalid
 #
 apiKey = "de14fcd88efece2cf0bf335df1004f54"
-badWords = [")", " etc", "including", "e.g."]
+badWords = [")", " etc", "including", "e.g.", "none"]
 noiseChars = [" & ", " x ", " / ", "on "]
 nontagChars = "\n\r\t _-&%().,/?\\[]"
 
@@ -59,8 +59,8 @@ def clean_tags() :
 	del_list = []
 
 	# removing "bad" words
-	tagsList = [remBad(tag, badWords) for tag in tagsList]
-
+	tagsList = [remBad(tag, badWords) for tag in tagsList if len(remBad(tag, badWords)) > 2]
+	
 	# sanity check for some random cases (e.g. and much more)
 	for tag in tagsList :
 		ttag = remBad(tag, noiseChars)
@@ -98,7 +98,6 @@ def clean_tags() :
 		br += 1
 	if (br < len(tagsList)) :
 		del tagsList[br:]
-	
 	print "EDBRA: Amount of tags after the purge: ", len(tagsList)
 
 def fixItem( item, title, defTags ) :
