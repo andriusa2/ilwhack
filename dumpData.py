@@ -11,7 +11,8 @@ alissTranslation = {
 				'title' : 'Name',
 				'locationnames' : 'Address',
 				'uri' : 'web',
-				'tags' : 'tags'
+				'tags' : 'tags',
+				'locations' : 'Location'
 				}
 # there is more translation done inside edbra parser...
 edbraTranslation = {
@@ -57,7 +58,7 @@ def fillMissing( items, keys ) : #cba to use dictview
 						if key not in item.keys()}
 			) for item in items]
 
-def removeDuplicates( items ) :
+def rmDups( items ) :
 	# removing items based on their location
 	# that isn't great way to do it
 	# but with current datasets it's precise enough
@@ -67,7 +68,7 @@ def removeDuplicates( items ) :
 	delList = []
 	for i, val in sItems[:-1] :
 		if (sItems[i+1]["Location"] == val["Location"]) :
-			print "Found dup by loc: ", val["Name"], "->", sItems[i+1]["Name"]
+			print "DBG: Found dup by loc:", val["Name"], "->", sItems[i+1]["Name"]
 			delList.append(i+1)
 	for i in reverse(delList) :
 		del sItems[i]
@@ -95,12 +96,13 @@ def dumpToDB( tags, items, rels ) :
 	SQL.insertRels( rels, db )
 	SQL.closeDB( db )
 
-inp = raw_input("Do you want to add data from ALISS (takes longer time, sorry)?(Y/N): ")
+inp = raw_input("Do you want to add data from ALISS (takes longer time)?(Y/N): ")
 doALISS = (inp.lower()[0] == 'y')
 
 import parse_edbra as ED
+import parse_aliss as AL
 print "Parsing data from Edinburgh council's Public API"
-print "Fetching may take a while, sorry"
+print "Fetching may take a while"
 ED.parse()
 print "Data parsed, importing it..."
 tags = ED.getCleanTags()
@@ -108,25 +110,24 @@ ed_items = ED.getItems()
 print "Done"
 print '-' * 16
 items = translateItems( ed_items, edbraTranslation )
-"""
-if (False) : #(doAliss) :
-	import parse_aliss as AL
+if (doALISS) :
 	print "Fetching data from ALISS database"
-	print "It will take a while, sorry"
+	print "It will take a while"
 	ln = len(tags)
 	al_items = []
-	for i, tag in enumerate(tags) :
-		if ( ((i * 10) / ln) > (((i - 1) * 10) / ln) ):
+	for i, tag in enumerate(tags,1) :
+		if ( ((i * 10) / ln) > ( ((i - 1) * 10) / ln ) ):
 			print str((i*10)/ln * 10)+"%..."
-		ak_items.extend(AL.getItemsByTag(tag))
+		if (" " in tag):
+			continue
+		al_items.extend(AL.getItems(tag))
 	print "Data fetched, importing it..."
 	al_items = AL.removeDuplicates( al_items )
-	items.extend(translateItems( al_items, alissTranslation )
+	items.extend(translateItems( al_items, alissTranslation ) )
 
-	items = removeDuplicates( items ) # that shouldn't be useful, but just in case...
+	items = rmDups( items ) # that shouldn't be useful, but just in case...
 	print "Done"
 	print '-' * 16
-"""
 fillMissing( items, defaultKeys )
 
 rels = make_assoc( tags, items )
