@@ -24,6 +24,9 @@ class DataParser extends Core{
 	public function allItems(){
 		return $this->withQID("selectAllItems","");
 	}
+	public function singleTag($id){
+		return json_encode($this->qq->selectById('tag','tags',$id));
+	}
 };
 $puller = new DataParser();
 
@@ -41,6 +44,9 @@ if(isset($_GET['get']))
 		if(isset($_GET['item_id'])){
 			$int = (int)($_GET['item_id']);
 			echo $puller->tagsByItem($int);
+		} else if(isset($_GET['id'])){
+			$int = (int)($_GET['id']);
+			echo $puller->singleTag($int);
 		} else {
 			echo $puller->randomTags();		
 		}	

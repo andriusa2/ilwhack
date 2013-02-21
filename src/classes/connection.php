@@ -40,12 +40,12 @@ class QuickQuery{
 		$this->prep_queries = &$sql_queries;
 		$this->db = &$db;
 	}
-	public function SelectById($cols,$table,$id){
-		$this->db->runQuery(sprintf($this->prep_queries["getById"],$cols, $table,$id));
+	public function selectById($cols,$table,$id){
+		$this->db->runQuery(sprintf($this->db->qArr["selectById"],$cols, $table,$id));
 		return $this->db->fetch();
 	}
-	public function DropById($cols, $table, $id){
-		$this->db->runQuery(sprintf($this->prep_queries["dropById"], $table, $id));
+	public function dropById($cols, $table, $id){
+		$this->db->runQuery(sprintf($this->db->qArr["deleteById"], $table, $id));
 		return true;
 	}
 };
