@@ -13,12 +13,12 @@
 	text-align: center;
 }
 .jumbotron h1 {
-	font-size: 54px;
+	font-size: 48px;
 	line-height: 1;
 }
 
 .jumbotron h1, h2 {
-	margin: 28px;
+	margin: 21px;
 }
 
 .jumbotron .btn {

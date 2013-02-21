@@ -36,18 +36,22 @@ function selectTag(id){
 			var coords = data[i].location.split(',').map(parseFloat);
 			resultDict.push({
 				latLng: coords,
+				data:{
+					id: data[i].id,
+					name: data[i].name,
+				},
 			});
 		}
 		resultDict.push({
 			latLng: [55.945163, -3.282852],
 			options: {
-				visible:true,
+				visible:false,
 			}
 		});
 		resultDict.push({
 			latLng: [55.952468, -3.146038],
 			options: {
-				visible:true,
+				visible:false,
 			}
 		});
 	});
@@ -61,7 +65,34 @@ function selectTag(id){
 			},
 			marker:{
 				values:resultDict,
-			},	
+				events:{
+					mouseover: function(marker, even, context){
+						var map = $(this).gmap3("get"),
+							infowindow = $(this).gmap3({get:{name:"infowindow"}});
+						if (infowindow){
+							infowindow.open(map,marker);
+							infowindow.setContent(context.data['name']+"<br/><b>Click on the marker to see more</b>");
+						} else {
+							$(this).gmap3({
+								infowindow:{
+									anchor:marker, 
+									options:{content: context.data['name']+"<br/><b>Click on the marker to see more</b>"}
+								}
+							});
+						}
+					},
+					mouseout: function(){
+						var infowindow = $(this).gmap3({get:{name:"infowindow"}});
+						if (infowindow){
+							infowindow.close();
+						}
+					},
+					click: function(marker, even, context){
+						
+					
+					},
+				},
+			},
 		});
 		$("#map_canvas").gmap3({
 			autofit:{},
