@@ -100,13 +100,13 @@ function selectTag(id){
 	});
 }
 function getTags(){
-	$("#tagcloud").empty();
+	$("#tagcloud").empty().hide();
 	$.getJSON('src/getData.php?get=tags', function(data){
 		for(var i =0; i < 20; i++){
 			$("#tagcloud").append("<a href=\"#\" onclick=\"selectTag("+data[i].id+")\" rel=\""+(Math.ceil((Math.random()+0.001)*8)).toString()+"\">"+data[i]['tag']+"&nbsp;</a>\n");
 		}
 		$('#tagcloud a').tagcloud();
-		
+		$('#tagcloud').fadeIn(500);
 	});
 }
 getTags();
@@ -128,3 +128,26 @@ $("#tryagain").click(
 		$("#selection").delay(600).slideDown(500);
 	}
 );
+
+$('#searchform').submit(function() {
+	searchq = $("input:first").val()
+  	$.getJSON('src/getData.php?get=tag&item='+searchq.toString(),function(data){
+  		if (data.length = 0){
+  			$("#selection").slideUp(500);
+  			$("#empty").delay(600).slideDown(500);
+  		} else {
+  			selectTag(data[Math.floor(Math.random()*data.length)]);
+  		}
+	});
+});
+
+
+
+
+
+
+
+
+
+
+
