@@ -47,7 +47,7 @@ def remChars(s, chs) :
 	return s
 
 def translateItem( item, table ) :
-	return { val : item[key] for key, val in table.items() }
+	return { val : unicode(item[key]) for key, val in table.items() }
 
 def translateItems( items, table ) :
 	return [ translateItem( item, table) for item in items ]
@@ -110,6 +110,7 @@ ed_items = ED.getItems()
 print "Done"
 print '-' * 16
 items = translateItems( ed_items, edbraTranslation )
+#doALISS = False
 if (doALISS) :
 	print "Fetching data from ALISS database"
 	print "It will take a while"
