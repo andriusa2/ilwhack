@@ -70,6 +70,22 @@ function drawMap(resultDict){
 	resultDict=addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
 		map:{},
+		panel:{
+			options:{
+				content:
+					'<div id="overlay">'+
+					'	<div class="exit_button"></div> ' +
+					'	<div class="name"></div>' + 
+					'	<div class="phone"></div>' +
+					'	<div class="website"></div>' +
+					'	<div class="address"></div>' +
+					'	<div class="email"></div>' +
+					'   <div class="origin"></div>' +
+					'</div>',
+				middle: true,
+				center: true,
+			}
+		},
 		marker:{
 			values:resultDict,
 			events:{
@@ -78,13 +94,13 @@ function drawMap(resultDict){
 						infowindow = $(this).gmap3({get:{name:"infowindow"}});
 					if (infowindow){
 						infowindow.open(map,marker);
-						infowindow.setContent(context.data['shortName']+"<br/><b>Click on the marker to see more</b>");
+						infowindow.setContent(context.data['shortName']+"<br/><b style=\"font-size:10px;\" >Click on the marker to see more</b>");
 					} else {
 						$(this).gmap3({
 							infowindow:{
 								anchor:marker, 
 								options:{
-									content: context.data['shortName']+"<br/><b>Click on the marker to see more</b>",
+									content: context.data['shortName']+"<br/><b style=\"font-size:10px;\">Click on the marker to see more</b>",
 									disableAutoPan: true,
 								}
 							}
@@ -98,15 +114,41 @@ function drawMap(resultDict){
 					}
 				},
 				click: function(marker, even, context){
-				
-			
+					showPanel(context.id.replace('gmap3_',''));
 				},
 			},
 		},
 		autofit:{},
 	});
+	$('#overlay').hide();
+	$('#overlay .exit_button').click(function(){
+		$('#overlay').fadeOut(function(){
+			$('#overlay .name').empty();
+			$('#overlay .phone').empty();
+			$('#overlay .website').empty();
+			$('#overlay .address').empty();
+			$('#overlay .email').empty();
+			$('#overlay .origin').empty();
+		});
+	});
 }
-
+function showPanel(id){
+	$.ajax({
+		url: 'src/getData.php?get=items&id='+id,
+		async: false,
+		dataType: 'json',
+		success:function(data){
+			if(data["shortName"]) $('#overlay .name').append("<h2>Name: </h2>"+data["shortName"]);
+			else alert("item not found!");
+			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
+			if(data["address"]) $('#overlay .address').append("<h3>Address: </h3>"+data["address"]);
+			if(data["website"]) $('#overlay .website').append("<h3>Website: </h3><a href=\""+data['web']+"\">"+data['web']+"</a>");
+			if(data["email"]) $('#overlay .email').append("<h3>E-mail: </h3><a href=\"mailto:"+data['email']+"\">"+data['email']+"</a>");
+			if(data["origin"]) $('#overlay .origin').append("Data from: "+data["origin"]);
+		},
+	});
+	$('#overlay').fadeIn();
+}
 //Given an array of tags switches to mapview and displays them
 function selectTags(ids){
 	var resultDict = new Array();

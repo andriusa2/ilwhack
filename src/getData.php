@@ -27,6 +27,9 @@ class DataParser extends Core{
 	public function singleTag($id){
 		return json_encode($this->qq->selectById('tag','tags',$id));
 	}
+	public function singleItem($id){
+		return json_encode($this->qq->selectById('*','items',$id));
+	}
 	public function tagsByQuery($query){
 		$res = array();
 		foreach($query as $in_tag){
@@ -49,6 +52,9 @@ if(isset($_GET['get']))
 		if(isset($_GET['tag_id'])){
 			$int = (int)($_GET['tag_id']);
 			echo $puller->itemsByTag($int);
+		} else if(isset($_GET['id'])){
+			$int = (int)($_GET['id']);
+			echo $puller->singleItem($int);
 		} else {
 			echo $puller->allItems();
 		}

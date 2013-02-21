@@ -1,0 +1,14 @@
+panel:{
+	options:{
+		content: '<div id="overlay">'+
+			'	<div class="name"></div>' + 
+			'	<div class="phone"></div>' +
+			'	<div class="website"></div>' +
+			'	<div class="address"></div>' +
+			'	<div class="email"></div>' +
+			'   <div class="origin"></div>' +
+			'</div>',
+		middle: true,
+		right: true,
+	}
+},

@@ -46,7 +46,20 @@
 #overlay{
 	width: 670px;
 	height: 470px;
-	margin: 15px;
-	background-color:#000;
+	background-color:rgba(0,0,0,0.3);
+	border-radius:7px;
+	border:solid 1px #000;
 }
-
+#overlay .exit_button{
+	width:25px;
+	height:25px;
+	border:none;
+	border-radius:5px;
+	background:url('../img/close-x.png') no-repeat;
+	position:absolute;
+	left:635px;
+	top:10px;
+}
+#overlay .exit_button:hover{
+	background: url('../img/close-x_hover.png') no-repeat;
+}
