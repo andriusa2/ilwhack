@@ -1,6 +1,18 @@
+function unique(dict){
+	var a =[];
+	var l = dict.length;
+	for(var i = 0;i < l; i++){
+		for(var j = i+1 ; j < l; j++){
+			if(dict[i] === dict[j])
+				j = ++i;
+		}
+		a.push(dict[i]);
+	}
+	return a;
+};
 //Iniatial animation
 $(document).ready(
-	function() { 
+	function() {
 	$('body').hide();
 	$('body').fadeIn();	
 	getTags();
@@ -15,21 +27,40 @@ $.fn.tagcloud.defaults = {
 function getItems(id){
 	if (id == 0) {$.getJSON('src/getData.php?get=items',function(data){});}
 	else{
-		resultDict = new Array();
-		for (var i = 0; i< data.length; i++){
-			var coords = data[i].location.split(',').map(parseFloat);
-			resultDict.push({
-				latLng: coords,
-				data:{
-					id: data[i].id,
-					name: data[i].name,
-				},
-			});
-		}
+		var resultDict = new Array();
+		$.ajax({
+			url: 'src/getData.php?get=items&tag_id='+id.toString(),
+			async: false,
+			dataType: 'json',
+			success:function(data){
+				for (var i = 0; i< data.length; i++){
+					var coords = data[i].location.split(',').map(parseFloat);
+					resultDict.push({
+						latLng: coords,
+						data:{
+							id: data[i].id,
+							shortName: data[i].shortName,
+						},
+					});
+				}
+			},
+		});
+		return resultDict;
+	}
+}
+function parseItems(resultDict, data){
+	for (var i = 0; i< data.length; i++){
+		var coords = data[i].location.split(',').map(parseFloat);
+		resultDict.push({
+			latLng: coords,
+			data:{
+				id: data[i].id,
+				shortName: data[i].shortName,
+			},
+		});
 	}
 	return resultDict;
 }
-
 //Function for adding empty markers to edinburgh
 function addDefaultMarkers(resultDict){
 	resultDict.push({
@@ -65,12 +96,12 @@ function drawMap(resultDict){
 						infowindow = $(this).gmap3({get:{name:"infowindow"}});
 					if (infowindow){
 						infowindow.open(map,marker);
-						infowindow.setContent(context.data['name']+"<br/><b>Click on the marker to see more</b>");
+						infowindow.setContent(context.data['shortName']+"<br/><b>Click on the marker to see more</b>");
 					} else {
 						$(this).gmap3({
 							infowindow:{
 								anchor:marker, 
-								options:{content: context.data['name']+"<br/><b>Click on the marker to see more</b>"}
+								options:{content: context.data['shortName']+"<br/><b>Click on the marker to see more</b>"}
 							}
 						});
 					}
@@ -95,12 +126,12 @@ function drawMap(resultDict){
 
 //Given an array of tags switches to mapview and displays them
 function selectTags(ids){
-	resultDict = new Array();
+	var resultDict = new Array();
 	for (var i = 0; i< ids.length; i++){ 
-		resultDict= concat(resultDict, getItems(ids[i]));
+		resultDict.push.apply(resultDict, getItems(ids[i]));
 	}
-	resultDict = resultDict.unique();
-	goodchoice(ids);
+	resultDict = unique(resultDict);
+	goodChoice(ids);
 	$("#selection").slideUp(500);
 	$("#mapview").delay(600).slideDown(500, drawMap(resultDict));
 }
@@ -126,7 +157,7 @@ function goodChoice(ids){
 }
 
 //Sets tags for the tagcloud
-function setTags(){
+function getTags(){
 	$("#tagcloud").empty().hide();
 	$.getJSON('src/getData.php?get=tags', function(data){
 		for(var i =0; i < 20; i++){

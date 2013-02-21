@@ -40,7 +40,13 @@
 }
 
 #map_canvas{
-	width:100%;
+	width: 700px;
 	height: 500px;
+}
+#overlay{
+	width: 670px;
+	height: 470px;
+	margin: 15px;
+	background-color:#000;
 }
 
