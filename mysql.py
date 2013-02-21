@@ -14,14 +14,14 @@ ID(int), name(varchar), location(varchar)
 import MySQLdb
 
 def resetDB( db, defaultKeys ):
-	if "location" not in [key.lower() for key in defaultKeys.keys()]
+	if "location" not in [key.lower() for key in defaultKeys.keys()] :
 		print "Can't create tables because there's no Location information..."
 		raise NameError("No Location key in defaultKeys")
 
 	c = db.cursor()
 	c.execute("DROP TABLE IF EXISTS tags")
 	c.execute("""CREATE TABLE tags (
-			id INT NOT NULL,
+			id INT NOT NULL AUTO_INCREMENT,
 			tag VARCHAR(25) NOT NULL,
 			PRIMARY KEY(id)
 			)""")
@@ -56,30 +56,27 @@ def insertItems( items, defaultKeys, db ):
 	# (O.o)
 	# (> <)
 
-	query = "".join(["INSERT INTO info(",
+	query = "".join(["INSERT INTO items(",
 			", ".join([key for _,(key,_) in sorted(defaultKeys.items())]),
 			") VALUES(",
-			", ".join( ["'%s'" for _ in range( len(defaultKeys.keys()) )] ),
+			", ".join( ["%s" for _ in range( len(defaultKeys.keys()) )] ),
 			")"])
 	vals = [tuple( [item[key] for key in sorted( defaultKeys.keys() )] ) \
 			for item in items ]
-	for item in items :
-		c.executemany(query, vals ) )	
+	c.executemany(query, vals )	
 	db.commit()
 	c.close()
 
 def insertTags( aTags, db ):
 	c = db.cursor()
-	for tag in aTags.keys():
-		c.execute( "INSERT INTO tags(id, tag) VALUES(%s, %s)",
-			(aTags[tag], tag) )
+	c.executemany( "INSERT INTO tags(tag) VALUES(%s)",
+			aTags )
 	db.commit()
 	c.close()
 
 def insertRels( relations, db ):
 	c = db.cursor()
-	for rel in relations:
-		c.execute( "INSERT INTO relations(tagID, itemID) VALUES(%s, %s)", rel)
+	c.executemany( "INSERT INTO relations(tagID, itemID) VALUES(%s, %s)", relations)
 	c.close()
 	db.commit()
 

@@ -15,7 +15,7 @@ alissTranslation = {
 				}
 # there is more translation done inside edbra parser...
 edbraTranslation = {
-				'Description' : 'Description',
+				'Activities' : 'Description',
 				'Name' : 'Name',
 				'Timetables' : 'Timetables',
 				'More information' : 'web',
@@ -37,17 +37,23 @@ dbKeys =  {'Description' : ('description','TEXT'),
 			#'Prices' : ('Prices','TINYTEXT'),
 			'Email' : ('email','TINYTEXT'),
 			'Location' : ('location','TINYTEXT')}
-defaultKeys = {key : "" for key, _ in dbKeys}
+defaultKeys = {key : "" for key,_ in dbKeys.items()}
+
+nontagChars = "\n\r\t _-&%().,/?\\[]"
+def remChars(s, chs) :
+	for c in chs:
+		s = s.replace(c, '')
+	return s
 
 def translateItem( item, table ) :
-	return { val : item[key] for key, val in table }
+	return { val : item[key] for key, val in table.items() }
 
 def translateItems( items, table ) :
 	return [ translateItem( item, table) for item in items ]
 
 def fillMissing( items, keys ) : #cba to use dictview
 	return [item.update(
-				{key:val for key, val in keys \
+				{key:val for key, val in keys.items() \
 						if key not in item.keys()}
 			) for item in items]
 
@@ -73,22 +79,23 @@ def make_assoc( tags, items ) :
 		
 		rels = []
 		for tagID, tag in enumerate(tags, 1) :
+			tagt = remChars(tag, nontagChars)
 			rels.extend(
 				[ (tagID, itemID) for itemID, item in enumerate(items, 1)
-								if tag in item["tags"] ]
+								if tagt in item["tags"] ]
 			)
 		return rels
 
 def dumpToDB( tags, items, rels ) :
 	import mysql as SQL
 	db = SQL.getConnection()
-	SQL.resetDB( db, defaultKeys )
-	SQL.insertItems( items, defaultKeys, db )
+	SQL.resetDB( db, dbKeys )
+	SQL.insertItems( items, dbKeys, db )
 	SQL.insertTags( tags, db )
 	SQL.insertRels( rels, db )
 	SQL.closeDB( db )
 
-inp = rawInput("Do you want to add data from ALISS (takes longer time, sorry)?(Y/N): ")
+inp = raw_input("Do you want to add data from ALISS (takes longer time, sorry)?(Y/N): ")
 doALISS = (inp.lower()[0] == 'y')
 
 import parse_edbra as ED
@@ -101,6 +108,7 @@ ed_items = ED.getItems()
 print "Done"
 print '-' * 16
 items = translateItems( ed_items, edbraTranslation )
+""""
 if (False) : #(doAliss) :
 	import parse_aliss as AL
 	print "Fetching data from ALISS database"
@@ -108,21 +116,21 @@ if (False) : #(doAliss) :
 	ln = len(tags)
 	al_items = []
 	for i, tag in enumerate(tags) :
-		if ( (i * 10) / ln > ((i - 1) * 10) / ln) ):
+		if ( ((i * 10) / ln) > (((i - 1) * 10) / ln) ):
 			print str((i*10)/ln * 10)+"%..."
 		ak_items.extend(AL.getItemsByTag(tag))
 	print "Data fetched, importing it..."
 	al_items = AL.removeDuplicates( al_items )
 	items.extend(translateItems( al_items, alissTranslation )
 
-	removeDuplicates( items ) # that shouldn't be useful, but just in case...
+	items = removeDuplicates( items ) # that shouldn't be useful, but just in case...
 	print "Done"
 	print '-' * 16
-
+"""""
 fillMissing( items, defaultKeys )
 
 rels = make_assoc( tags, items )
-inp = rawInput("Do you want to dump all this data to DB?\nNOTE: current data will be purged! (Y/N): "
+inp = raw_input("Do you want to dump all this data to DB?\nNOTE: current data will be purged! (Y/N): ")
 if (inp.lower()[0] == 'y'):
 	dumpToDB( tags, items, rels )
 

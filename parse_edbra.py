@@ -105,26 +105,24 @@ def fixItem( item, title, defTags ) :
 	# loads of fixes, can still be broken
 	# by sensitive data
 	# Y U SO INCONSISTENT???
+	compKeys = ["Address", "Postcode", "Activities", "Timetables",
+		"Email", "Telephone", "More information"]
+	for k in compKeys :
+		if k not in item:
+			item[k] = ""
 	if "Name" not in item :
 		item["Name"] = title
+	if "Location map" in item :
+		item["Location"] = item["Location map"]
+	if item['Timetables'] == "" and 'Opening hours' in item :
+		item['Timetables'] = item['Opening hours']
+	item['Address'] = " ".join([item['Address'], item['Postcode']])
+	item["tags"] = item["Activities"].lower()
+	item["tags"] += defTags
 	for field in item.keys() :
 		if item[field] == None:
 			item[field] = ""
-	if "Address" not in item :
-		item["Address"] = ""
-	if "Postcode" not in item :
-		item["Postcode"] = ""
-	if "Activities" not in item :
-		item["Activities"] = ""
-	if "Location map" in item :
-		item["Location"] = item["Location map"]
-	if "Timetables" not in item :
-		item["Timetables"] = ""
-	if item['Timetables'] == "" and 'Opening hours' in item :
-		item['Timetables'] = item['Opening hours']
-	item['Address'] = " ".join([items['Address'], items['Postcode']])
-	item["tags"] = item["Activities"].lower()
-	item["tags"].join(defTags)
+	return item
 
 def parse_file( filename, dbg = False, defaultTags = "" ):
 	global tagsList
@@ -139,7 +137,7 @@ def parse_file( filename, dbg = False, defaultTags = "" ):
 		for field in entry.iter("field") :
 			items[-1][field.get("name")] = unicode(field.text)
 
-		items[-1] = fixItem(items[-1], unicode(entry.find("title").text), defaulttags)
+		items[-1] = fixItem(items[-1], unicode(entry.find("title").text.strip()), defaultTags)
 
 		t = items[-1]["Location"].split(',')
 		# good enough
@@ -175,15 +173,15 @@ def parse_file( filename, dbg = False, defaultTags = "" ):
 		keysID.append(items[-1].keys())
 	tagsList = list(tagsSet)
 
-def parseXML_URL( url, dbg = False, defaulttags = "" ):
+def parseXML_URL( url, dbg = False, defaultTags = "" ):
 	u = URL.urlopen(url)
-	parse_file( u, dbg, defaulttags )
+	parse_file( u, dbg, defaultTags )
 
-def parse_edi_gov( dirID, defaulttags = "" ):
+def parse_edi_gov( dirID, defaultTags = "" ):
 	s = "http://www.edinburgh.gov.uk/api/directories/%s/entries.xml?api_key=%s&per_page=100&page=1"
-	s = s % (apiKey, dirID)
+	s = s % (dirID, apiKey)
 #	print "EDBRA: DBG: Parsing XML from url (",s,")"
-	parseXML_URL( s, False, defaulttags )
+	parseXML_URL( s, False, defaultTags )
 
 
 #useful ids (http://www.edinburgh.gov.uk/directories)
