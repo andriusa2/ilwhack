@@ -120,8 +120,10 @@ def fixItem( item, title, defTags ) :
 	item["tags"] = item["Activities"].lower()
 	item["tags"] += defTags
 	for field in item.keys() :
-		if item[field] == None:
+		if item[field] == None or item[field] == u'None':
 			item[field] = ""
+		else:
+			item[field] = item[field].strip()
 	return item
 
 def parse_file( filename, dbg = False, defaultTags = "" ):

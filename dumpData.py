@@ -108,7 +108,7 @@ ed_items = ED.getItems()
 print "Done"
 print '-' * 16
 items = translateItems( ed_items, edbraTranslation )
-""""
+"""
 if (False) : #(doAliss) :
 	import parse_aliss as AL
 	print "Fetching data from ALISS database"
@@ -126,7 +126,7 @@ if (False) : #(doAliss) :
 	items = removeDuplicates( items ) # that shouldn't be useful, but just in case...
 	print "Done"
 	print '-' * 16
-"""""
+"""
 fillMissing( items, defaultKeys )
 
 rels = make_assoc( tags, items )
