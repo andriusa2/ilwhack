@@ -114,7 +114,7 @@ function drawMap(resultDict){
 					}
 				},
 				click: function(marker, even, context){
-					showPanel(context.id.replace('gmap3_',''));
+					showPanel(context.data['id']);
 				},
 			},
 		},
@@ -139,7 +139,7 @@ function showPanel(id){
 		dataType: 'json',
 		success:function(data){
 			if(data["shortName"]) $('#overlay .name').append("<h2>Name: </h2>"+data["shortName"]);
-			else alert("item not found!");
+			else { alert("item not found!"); return;};
 			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
 			if(data["address"]) $('#overlay .address').append("<h3>Address: </h3>"+data["address"]);
 			if(data["website"]) $('#overlay .website').append("<h3>Website: </h3><a href=\""+data['web']+"\">"+data['web']+"</a>");

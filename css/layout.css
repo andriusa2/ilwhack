@@ -49,6 +49,7 @@
 	background-color:rgba(0,0,0,0.3);
 	border-radius:7px;
 	border:solid 1px #000;
+	color:#ffffff;
 }
 #overlay .exit_button{
 	width:25px;
