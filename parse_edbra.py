@@ -139,7 +139,7 @@ def parse_file( filename, dbg = False, defaultTags = "" ):
 			items[-1][field.get("name")] = unicode(field.text)
 
 		items[-1] = fixItem(items[-1], unicode(entry.find("title").text.strip()), defaultTags)
-
+		items[-1]["origin"] = "EDBRA"
 		t = items[-1]["Location"].split(',')
 		# good enough
 		if (len(t) == 2 and " " not in items[-1]["Location"]) :
