@@ -23,7 +23,7 @@ class Database{
 	public function fetch(){
 		return $this->result->fetch_assoc();
 	}
-	public function clean(){
+	public function clean($str){
 		return $this->db->real_escape_string($str);
 	}
 	public function numRows(){
