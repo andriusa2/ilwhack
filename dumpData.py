@@ -54,7 +54,7 @@ def fillMissing( items, keys ) : #cba to use dictview
 def removeDuplicates( items ) :
 	# removing items based on their location
 	# that isn't great way to do it
-	# but with current datasets it's fairly efficient
+	# but with current datasets it's precise enough
 	if len(items) < 2 :
 		return items
 	sItems = sorted(items, key=lambda i : i["Location"])
