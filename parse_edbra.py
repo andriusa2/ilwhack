@@ -238,15 +238,7 @@ def parse_edi_gov( dirID, defaultTags = "" ):
 	print "Parsing XML from url at (",s,")"
 	parseXML_URL( s, True, defaultTags )
 
-def dumpToDB():
-	make_assoc()
-	db = SQL.getConnection()
-	SQL.resetDB( db, defaultKeys )
-	SQL.insertItems( items, db )
-	SQL.insertTags( assoc_tags, db )
-	SQL.insertRels( rels, db )
-	SQL.insertInfo( items, defaultKeys, db)
-	SQL.closeDB( db )
+
 
 # parse_file("tmp.xml")
 #useful ids (http://www.edinburgh.gov.uk/directories)
