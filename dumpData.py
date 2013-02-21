@@ -66,11 +66,11 @@ def rmDups( items ) :
 		return items
 	sItems = sorted(items, key=lambda i : i["Location"])
 	delList = []
-	for i, val in sItems[:-1] :
+	for i, val in enumerate(sItems[:-1]) :
 		if (sItems[i+1]["Location"] == val["Location"]) :
 			print "DBG: Found dup by loc:", val["Name"], "->", sItems[i+1]["Name"]
 			delList.append(i+1)
-	for i in reverse(delList) :
+	for i in reversed(delList) :
 		del sItems[i]
 	return sItems
 
@@ -120,6 +120,7 @@ if (doALISS) :
 			print str((i*10)/ln * 10)+"%..."
 		if (" " in tag):
 			continue
+		#if ( i > 10): break
 		al_items.extend(AL.getItems(tag))
 	print "Data fetched, importing it..."
 	al_items = AL.removeDuplicates( al_items )

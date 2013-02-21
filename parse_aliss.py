@@ -26,6 +26,7 @@ def fixLists( items ) :
 		for key in i.keys():
 			if (type(i[key]) is list) :
 				i[key] = i[key][0]
+			i[key] = unicode(i[key])
 	return items
 def fixKeys( items ) :
 	if items == None or len(items) == 0:
@@ -54,7 +55,7 @@ def removeDuplicates( items ) :
 	for i, val in enumerate(items[:-1]) :
 		if (items[i+1]["id"] == val["id"]) :
 			delList.append(i+1)
-	for i in reverse(delList) :
+	for i in reversed(delList) :
 		del items[i]
 	return items
 # [u'description', u'title', u'locationnames', u'tags', u'locations', u'uri', u'score', u'accounts', u'id']
