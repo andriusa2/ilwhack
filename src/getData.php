@@ -67,8 +67,14 @@ if(isset($_GET['get']))
 			echo $puller->singleTag($int);
 		} else if(isset($_GET['query'])){
 			$query = explode(',',$_GET['query']);
+			$retval = array();
+			foreach($query as $q){
+				$retval[] = trim(strtolower($q));
+			}
+			/* // php 5.3+
 			$query = array_map(function($str){return trim($str);},$query);
 			$query = array_map(function($str){return strtolower($str);},$query);
+			*/
 			echo $puller->tagsByQuery($query);
 		} else {
 			echo $puller->randomTags();		

@@ -44,6 +44,9 @@ function addDefaultMarkers(){
 function drawMap(){
 	addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
+		clear:{}
+		});
+	$("#map_canvas").gmap3({
 		map:{
 			options: {
 			center:[55.945163, -3.282852],
@@ -136,7 +139,7 @@ function showPanel(id){
 //Given an array of tags switches to mapview and displays them
 function selectTags(ids){
 	$("#selection").slideUp(500);	
-	$("#mapview").delay(600).slideDown(500);
+	$("#mapview").slideDown(500);
 	goodChoice(ids);
 	resultDict = new Array();
 	for (var i =0; i<ids.length; i++){
