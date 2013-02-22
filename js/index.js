@@ -118,7 +118,7 @@ function clearPanel(){
 function showPanel(id){
 	$.ajax({
 		url: 'src/getData.php?get=items&id='+id,
-		async: true,
+		async: false,
 		dataType: 'json',
 		success:function(data){
 			clearPanel();
@@ -142,7 +142,7 @@ function selectTags(ids){
 	for (var i =0; i<ids.length; i++){
 		$.ajax({
 			url:'src/getData.php?get=items&tag_id='+ids[i].toString(),
-			async: false,
+			async: true,
 			dataType:'json',
 			success:function(data){
 				//console.log(data);
@@ -160,7 +160,7 @@ function selectTags(ids){
 				drawMap();
 			},
 		});
-	}	
+	}
 }
 
 //Friendly success message
@@ -180,7 +180,7 @@ function goodChoice(ids){
 		str = tag[0].toUpperCase() + tag.slice(1)
 		if (ids.length>1){str = str + " and others"}
 		str = str + ", " + gz[Math.floor(Math.random()*gz.length)];
-		$("#choice").empty().append(str).slideDown(300);
+		$("#choice").empty().append(str).show();
 	});
 }
 
@@ -201,9 +201,10 @@ $("#retry").click(
 	function(){
 		getTags();
 		$("#mapview").slideUp(500);
-		$("#selection").delay(600).slideDown(500);
-		$("#map_canvas").gmap3({
-			clear:{},
+		$("#selection").delay(600).slideDown(500,function(){
+			$("#map_canvas").gmap3({
+				clear:{},
+			});
 		});
 	}
 );
