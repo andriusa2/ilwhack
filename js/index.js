@@ -44,9 +44,6 @@ function addDefaultMarkers(){
 function drawMap(){
 	addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
-		clear:{}
-		});
-	$("#map_canvas").gmap3({
 		map:{
 			options: {
 			center:[55.945163, -3.282852],
