@@ -44,6 +44,7 @@ function addDefaultMarkers(){
 function drawMap(){
 	addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
+
 		map:{
 			options: {
 			center:[55.945163, -3.282852],
@@ -53,13 +54,14 @@ function drawMap(){
 		panel:{
 			options:{
 				content:
-					'<div id="overlay">'+
+					'<div id="overlay" style="visibility:hidden;">'+
 					'	<div class="exit_button"></div> ' +
 					'	<div class="name"></div>' + 
 					'	<div class="phone"></div>' +
 					'	<div class="website"></div>' +
 					'	<div class="address"></div>' +
 					'	<div class="email"></div>' +
+					'	<div class="route">Get Route!</div>' +
 					'   <div class="origin"></div>' +
 					'</div>',
 				middle: true,
@@ -101,11 +103,93 @@ function drawMap(){
 		autofit:{},
 	});
 	$('#overlay').hide();
+	geoLocation();
 	$('#overlay .exit_button').click(function(){
 		$('#overlay').fadeOut(function(){
 			clearPanel();
 		});
 	});
+}
+function geoLocation(){
+	$('#map_canvas').gmap3({ 
+		getgeoloc:{
+			callback : function(latLng){
+				if (latLng){
+					$(this).gmap3({
+						marker:{ 
+							latLng:latLng,
+							tag: "myloc",
+							options: {
+								visible: true,
+								icon: "http://maps.google.com/mapfiles/marker_green.png",
+							},
+						},
+					});
+				}
+			},
+		},
+	}, "autofit");
+}
+function getRoute(dest){
+	if (navigator.geolocation){
+		/*$('#map_canvas').gmap3({
+			clear: {
+				tag: "lolwut",
+			},
+		});
+		$('#map_canvas').gmap3({ action: 'addDirectionsRenderer', preserveViewport: true, 
+		markerOptions: { visible: false} }, 
+		{ action: 'setDirectionsPanel', id: 'directions' });
+		*/
+		$('#map_canvas').gmap3({
+			get:{
+				name: "marker",
+				tag: "myloc",
+				all: true,
+				callback:function(objs){
+					console.log(objs[0].position);
+					$(this).gmap3({
+						getroute:{
+							options:{
+								origin:objs[0].position,
+								destination: dest ,
+								travelMode: google.maps.DirectionsTravelMode.DRIVING,
+							},
+							callback: function(results){
+								if (!results) return;
+								if (!jQuery("#dircontainer").length>0) {
+								jQuery("<div id='dircontainer' class='googlemap'></div>").insertAfter("#googleMap");
+								} // Creates your directions container if it doesn't already exist.
+								else {
+								jQuery("#dircontainer").html("");
+								} /* I'm clearing the existing contents of the container in case gmap3 doesn't
+								   automatically clear it when the new directions are inserted.
+								   You can experiment with removing this else statement. */
+								jQuery(this).gmap3({
+								map:{
+								  options:{
+								  }
+								},
+								directionsrenderer:{
+								  divId: "dircontainer",
+								  options:{
+								  
+									directions:results
+								  }
+								}
+								});
+							},
+						},
+					});
+				},
+			},
+		});
+		var todo = { action: 'clear', name: 'directionrenderer' };
+		$('#map_canvas').gmap3(todo);
+		$('#overlay').hide();
+	} else {
+		alert("Your geolocation is not set");
+	}
 }
 function clearPanel(){
 	$('#overlay .name').empty();
@@ -114,6 +198,7 @@ function clearPanel(){
 	$('#overlay .address').empty();
 	$('#overlay .email').empty();
 	$('#overlay .origin').empty();
+	$('#overlay .route').empty();
 };
 function showPanel(id){
 	$.ajax({
@@ -129,8 +214,12 @@ function showPanel(id){
 			if(data["email"]) $('#overlay .email').append("<h3>E-mail: </h3><a href=\"mailto:"+data['email']+"\">"+data['email']+"</a>");
 			if(data["web"]) $('#overlay .website').append("<h3>Website: </h3><a href=\""+data['web']+"\">"+data['web']+"</a>");
 			if(data["origin"]) $('#overlay .origin').append("Data from: "+data["origin"]);
+			$('#overlay .route').click(function(){
+				getRoute(data["location"]);
+			});
 		},
 	});
+
 	$('#overlay').fadeIn();
 }
 //Given an array of tags switches to mapview and displays them
