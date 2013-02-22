@@ -140,7 +140,11 @@ function selectTags(ids){
 	goodChoice(ids);
 	resultDict = new Array();
 	for (var i =0; i<ids.length; i++){
-			$.getJSON('src/getData.php?get=items&tag_id='+ids[i].toString(), function(data){
+		$.ajax({
+			url:'src/getData.php?get=items&tag_id='+ids[i].toString(),
+			async: false,
+			dataType:'json',
+			success:function(data){
 				//console.log(data);
 				for (var i = 0; i< data.length; i++){
 					var coords = data[i].location.split(',').map(parseFloat);
@@ -154,9 +158,9 @@ function selectTags(ids){
 				}
 				resultDict = unique(resultDict);
 				drawMap();
-				})
+			},
+		});
 	}	
-			
 }
 
 //Friendly success message
