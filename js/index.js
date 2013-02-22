@@ -48,7 +48,8 @@ function drawMap(){
 			options: {
 			center:[55.945163, -3.282852],
 			zoom: 12,
-			}
+			},
+		},
 		panel:{
 			options:{
 				content:
