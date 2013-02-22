@@ -94,7 +94,7 @@
 #overlay .origin{
 	position:absolute;
 	text-align:right;
-	left:660px;
-	top: 460px;
-	font-size:10px;
+	font-size:11px;
+	top:445px;
+	right:10px;
 }
