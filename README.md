@@ -42,6 +42,8 @@ This work is licensed under the Creative Commons Attribution-NonCommercial-Share
 
 Team/credits
 ------
-Andrius Žiūkas - Team leader/data mining/database structure
-Martynas Melninkas - Backend/frontend-backend linking
+
+* Andrius Žiūkas - Team leader/data mining/database structure
+* Martynas Melninkas - Backend/frontend-backend linking
+* Jakov Šmelkin - Frontend/gmaps3 rendering/tag search
 
