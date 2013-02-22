@@ -123,21 +123,25 @@ function drawMap(resultDict){
 	$('#overlay').hide();
 	$('#overlay .exit_button').click(function(){
 		$('#overlay').fadeOut(function(){
-			$('#overlay .name').empty();
-			$('#overlay .phone').empty();
-			$('#overlay .website').empty();
-			$('#overlay .address').empty();
-			$('#overlay .email').empty();
-			$('#overlay .origin').empty();
+			clearPanel();
 		});
 	});
 }
+function clearPanel(){
+	$('#overlay .name').empty();
+	$('#overlay .phone').empty();
+	$('#overlay .website').empty();
+	$('#overlay .address').empty();
+	$('#overlay .email').empty();
+	$('#overlay .origin').empty();
+};
 function showPanel(id){
 	$.ajax({
 		url: 'src/getData.php?get=items&id='+id,
 		async: false,
 		dataType: 'json',
 		success:function(data){
+			clearPanel();
 			if(data["shortName"]) $('#overlay .name').append("<h2>Name: </h2>"+data["shortName"]);
 			else { alert("item not found!"); return;};
 			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
