@@ -18,38 +18,14 @@ $(document).ready(
 	getTags();
 	}
 );
+var resultDict = new Array();
 //Tagcloud sizes and colours
 $.fn.tagcloud.defaults = {
 	size: {start: 22, end: 40, unit: 'pt'},
 	color: {start: '#cde', end: '#f52'}
 };
-//Function for getting iteam objects from s single tag
-function getItems(id){
-	if (id == 0) {$.getJSON('src/getData.php?get=items',function(data){});}
-	else{
-		var resultDict = new Array();
-		$.ajax({
-			url: 'src/getData.php?get=items&tag_id='+id.toString(),
-			async: false,
-			dataType: 'json',
-			success:function(data){
-				for (var i = 0; i< data.length; i++){
-					var coords = data[i].location.split(',').map(parseFloat);
-					resultDict.push({
-						latLng: coords,
-						data:{
-							id: data[i].id,
-							shortName: data[i].shortName,
-						},
-					});
-				}
-			},
-		});
-		return resultDict;
-	}
-}
 //Function for adding empty markers to edinburgh
-function addDefaultMarkers(resultDict){
+function addDefaultMarkers(){
 	resultDict.push({
 		latLng: [55.945163, -3.282852],
 		options: {
@@ -62,14 +38,18 @@ function addDefaultMarkers(resultDict){
 			visible:false,
 		}
 	});
-	return resultDict;
 }
 
 //Function to draw a map
-function drawMap(resultDict){
-	resultDict=addDefaultMarkers(resultDict);
+function drawMap(){
+	addDefaultMarkers(resultDict);
 	$("#map_canvas").gmap3({
-		map:{},
+		map:{
+			options: {
+			center:[55.945163, -3.282852],
+			zoom: 12,
+			},
+		},
 		panel:{
 			options:{
 				content:
@@ -84,7 +64,7 @@ function drawMap(resultDict){
 					'</div>',
 				middle: true,
 				center: true,
-			}
+			}		
 		},
 		marker:{
 			values:resultDict,
@@ -123,21 +103,25 @@ function drawMap(resultDict){
 	$('#overlay').hide();
 	$('#overlay .exit_button').click(function(){
 		$('#overlay').fadeOut(function(){
-			$('#overlay .name').empty();
-			$('#overlay .phone').empty();
-			$('#overlay .website').empty();
-			$('#overlay .address').empty();
-			$('#overlay .email').empty();
-			$('#overlay .origin').empty();
+			clearPanel();
 		});
 	});
 }
+function clearPanel(){
+	$('#overlay .name').empty();
+	$('#overlay .phone').empty();
+	$('#overlay .website').empty();
+	$('#overlay .address').empty();
+	$('#overlay .email').empty();
+	$('#overlay .origin').empty();
+};
 function showPanel(id){
 	$.ajax({
 		url: 'src/getData.php?get=items&id='+id,
 		async: false,
 		dataType: 'json',
 		success:function(data){
+			clearPanel();
 			if(data["shortName"]) $('#overlay .name').append("<h2>Name: </h2>"+data["shortName"]);
 			else { alert("item not found!"); return;};
 			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
@@ -151,20 +135,33 @@ function showPanel(id){
 }
 //Given an array of tags switches to mapview and displays them
 function selectTags(ids){
-	var resultDict = new Array();
-	for (var i = 0; i< ids.length; i++){ 
-		resultDict.push.apply(resultDict, getItems(ids[i]));
-	}
-	resultDict = unique(resultDict);
+	$("#selection").slideUp(500);	
+	$("#mapview").delay(600).slideDown(500);
 	goodChoice(ids);
-	$("#selection").slideUp(500);
-	$("#mapview").slideDown(500);
-	drawMap(resultDict);
-	
+	resultDict = new Array();
+	for (var i =0; i<ids.length; i++){
+			$.getJSON('src/getData.php?get=items&tag_id='+ids[i].toString(), function(data){
+				//console.log(data);
+				for (var i = 0; i< data.length; i++){
+					var coords = data[i].location.split(',').map(parseFloat);
+					resultDict.push({
+						latLng: coords,
+						data:{
+							id: data[i].id,
+							shortName: data[i].shortName,
+						},
+					});
+				}
+				resultDict = unique(resultDict);
+				drawMap();
+				})
+	}	
+			
 }
 
 //Friendly success message
 function goodChoice(ids){
+	$("#choice").hide();
 	gz = [
 	"Good choice!",
 	"Awesome choice!",
@@ -179,7 +176,7 @@ function goodChoice(ids){
 		str = tag[0].toUpperCase() + tag.slice(1)
 		if (ids.length>1){str = str + " and others"}
 		str = str + ", " + gz[Math.floor(Math.random()*gz.length)];
-		$("#choice").empty().append(str);
+		$("#choice").empty().append(str).slideDown(300);
 	});
 }
 
@@ -191,7 +188,7 @@ function getTags(){
 			$("#tagcloud").append("<a href=\"#\" onclick=\"selectTags(["+data[i].id+"])\" rel=\""+(Math.ceil((Math.random()+0.001)*8)).toString()+"\">"+data[i]['tag']+"&nbsp;</a>\n");
 		}
 		$('#tagcloud a').tagcloud();
-		$('#tagcloud').fadeIn(500);
+		$('#tagcloud').slideDown();
 	});
 }
 
@@ -219,12 +216,17 @@ $("#tryagain").click(
 $('#searchform').submit(function() {
 	searchq = $("input:first").val()
   	$.getJSON('src/getData.php?get=tags&query='+searchq.toString(),function(data){
-  		if (data.length = 0){
+  		if (data.length == 0){
   			$("#selection").slideUp(500);
   			$("#empty").delay(600).slideDown(500);
   		} else {
-  			selectTags(data);
+			var ids = new Array();
+			for (var i=0; i<data.length; i++){
+				ids.push(data[i].id)
+			}
+			selectTags(ids);
   		}
+		$('#searchform')[0].reset();
 	});
 });
 

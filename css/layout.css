@@ -46,7 +46,7 @@
 #overlay{
 	width: 670px;
 	height: 470px;
-	background-color:rgba(0,0,0,0.3);
+	background-color:rgba(0,0,0,0.6);
 	border-radius:7px;
 	border:solid 1px #000;
 	color:#ffffff;
@@ -63,4 +63,11 @@
 }
 #overlay .exit_button:hover{
 	background: url('../img/close-x_hover.png') no-repeat;
+}
+#overlay .origin{
+	position:absolute;
+	text-align:right;
+	left:660px;
+	top: 460px;
+	font-size:10px;
 }
