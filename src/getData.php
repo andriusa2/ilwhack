@@ -32,8 +32,7 @@ class DataParser extends Core{
 	}
 	public function tagsByQuery($query){
 		$res = array();
-		foreach($query as $in_tag){
-			$tag = $this->db->clean($in_tag);
+		foreach($query as $tag){
 			if (strlen($tag) < 3) continue;
 			$this->db->RunQuery(sprintf($this->db->qArr["selectTagsLikeQuery"],$tag));
 			while ($row = $this->db->fetch()){
@@ -66,16 +65,13 @@ if(isset($_GET['get']))
 			$int = (int)($_GET['id']);
 			echo $puller->singleTag($int);
 		} else if(isset($_GET['query'])){
-			$query = explode(',',$_GET['query']);
-			$retval = array();
-			foreach($query as $q){
-				$retval[] = trim(strtolower($q));
-			}
+			$query = array();
+			preg_match_all("/[a-z0-9]+/",strtolower($_GET['query']),$query);
 			/* // php 5.3+
 			$query = array_map(function($str){return trim($str);},$query);
 			$query = array_map(function($str){return strtolower($str);},$query);
 			*/
-			echo $puller->tagsByQuery($retval);
+			echo $puller->tagsByQuery($query[0]);
 		} else {
 			echo $puller->randomTags();		
 		}	

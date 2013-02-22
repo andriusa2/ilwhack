@@ -124,10 +124,10 @@ function showPanel(id){
 			clearPanel();
 			if(data["shortName"]) $('#overlay .name').append(data["shortName"]);
 			else { alert("item not found!"); return;};
-			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
 			if(data["address"]) $('#overlay .address').append("<h3>Address: </h3>"+data["address"]);
-			if(data["website"]) $('#overlay .website').append("<h3>Website: </h3><a href=\""+data['web']+"\">"+data['web']+"</a>");
+			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
 			if(data["email"]) $('#overlay .email').append("<h3>E-mail: </h3><a href=\"mailto:"+data['email']+"\">"+data['email']+"</a>");
+			if(data["web"]) $('#overlay .website').append("<h3>Website: </h3><a href=\""+data['web']+"\">"+data['web']+"</a>");
 			if(data["origin"]) $('#overlay .origin').append("Data from: "+data["origin"]);
 		},
 	});
@@ -167,11 +167,11 @@ function selectTags(ids){
 function goodChoice(ids){
 	$("#choice").hide();
 	gz = [
-	"Good choice!",
-	"Awesome choice!",
-	"Cool!",
-	"Well done!",
-	"Like a boss!",
+	"good choice!",
+	"awesome choice!",
+	"cool!",
+	"well done!",
+	"like a boss!",
 	];
 	id=ids[Math.floor(Math.random()*ids.length)]
 	$.getJSON('src/getData.php?get=tags&id='+id.toString(),function(data){

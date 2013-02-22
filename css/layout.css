@@ -98,3 +98,9 @@
 	top:445px;
 	right:10px;
 }
+#overlay a{
+	color:#4488ff;
+}
+#overlay a:hover{
+	color:#88aaff;
+}

@@ -6,6 +6,6 @@ $sql_queries = array (
 	"selectTagsByItem" => "SELECT T.id, T.tag FROM tags T, relations R WHERE R.itemID = %d AND T.id = R.tagID",
 	"selectRandomTags" => "SELECT * FROM tags ORDER BY RAND() LIMIT 20",
 	"selectAllItems" => "SELECT * FROM items LIMIT 500",
-	"selectTagsLikeQuery" => "SELECT * FROM tags WHERE tag LIKE \"%s%%\" ",
+	"selectTagsLikeQuery" => "SELECT * FROM tags WHERE tag LIKE \"%%%s%%\" ",
 );
 ?>
