@@ -75,7 +75,7 @@ if(isset($_GET['get']))
 			$query = array_map(function($str){return trim($str);},$query);
 			$query = array_map(function($str){return strtolower($str);},$query);
 			*/
-			echo $puller->tagsByQuery($query);
+			echo $puller->tagsByQuery($retval);
 		} else {
 			echo $puller->randomTags();		
 		}	
