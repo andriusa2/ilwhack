@@ -44,7 +44,7 @@ def resetDB( db, defaultKeys ):
 	db.commit()
 
 def getConnection():
-	db = MySQLdb.connect(host='localhost', user='user', passwd='password', db='doed', use_unicode=True, charset="utf8")
+	db = MySQLdb.connect(host='127.0.0.1', user='user', passwd='password', db='doed', use_unicode=True, charset="utf8")
 	return db
 
 def insertItems( items, defaultKeys, db ):
