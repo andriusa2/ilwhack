@@ -125,6 +125,11 @@ def fixItem( item, title, defTags ) :
 			item[field] = ""
 		else:
 			item[field] = item[field].strip()
+	if item["Email"].count("@") > 1 :
+		item["Email"] = item["Email"].split(".co.uk")[0].strip() + ".co.uk"
+	elif item["Email"].count("@") == 1 and item["Email"].split("@")[1].count(".") < 1:
+		item["Email"] += ".co.uk" # though I should reject it fully
+		
 	return item
 
 def parse_file( filename, dbg = False, defaultTags = "" ):
