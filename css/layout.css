@@ -43,6 +43,7 @@
 #map_canvas{
 	width: 700px;
 	height: 500px;
+	box-shadow:0px 0px 5px rgba(0,0,0,0.5);
 }
 #overlay{
 	width: 670px;
@@ -73,9 +74,11 @@
 }
 #overlay div.name {
 	font-size:30px;
-	padding:60px 0px 30px 0px;
+	padding:60px 0px 30px 30px;
 	text-align:center;
 	text-shadow:1px 1px 1px #000;
+	max-width:600px;
+	line-height:1.2;
 }
 #overlay div h2, h3{
 	padding:10px 0px 0px 0px;

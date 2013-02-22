@@ -122,7 +122,7 @@ function showPanel(id){
 		dataType: 'json',
 		success:function(data){
 			clearPanel();
-			if(data["shortName"]) $('#overlay .name').append("<h2>Name: </h2>"+data["shortName"]);
+			if(data["shortName"]) $('#overlay .name').append(data["shortName"]);
 			else { alert("item not found!"); return;};
 			if(data["phone"]) $('#overlay .phone').append("<h3>Phone: </h3>" + data["phone"]);
 			if(data["address"]) $('#overlay .address').append("<h3>Address: </h3>"+data["address"]);
@@ -220,7 +220,7 @@ $("#tryagain").click(
 
 //Processing for the seach field
 $('#searchform').submit(function() {
-	searchq = $("input:first").val()
+	searchq = $("input:first").val();
   	$.getJSON('src/getData.php?get=tags&query='+searchq.toString(),function(data){
   		if (data.length == 0){
   			$("#selection").slideUp(500);
