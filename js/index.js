@@ -118,7 +118,7 @@ function clearPanel(){
 function showPanel(id){
 	$.ajax({
 		url: 'src/getData.php?get=items&id='+id,
-		async: false,
+		async: true,
 		dataType: 'json',
 		success:function(data){
 			clearPanel();
