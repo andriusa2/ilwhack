@@ -212,6 +212,7 @@ $("#tryagain").click(
 	}
 );
 
+
 //Processing for the seach field
 $('#searchform').submit(function() {
 	searchq = $("input:first").val()
@@ -228,6 +229,7 @@ $('#searchform').submit(function() {
   		}
 		$('#searchform')[0].reset();
 	});
+	return false;
 });
 
 
