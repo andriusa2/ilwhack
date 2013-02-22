@@ -15,6 +15,7 @@
 .jumbotron h1 {
 	font-size: 48px;
 	line-height: 1;
+	min-height:48px;
 }
 
 .jumbotron h1, h2 {
@@ -46,10 +47,11 @@
 #overlay{
 	width: 670px;
 	height: 470px;
-	background-color:rgba(0,0,0,0.6);
+	background-color:rgba(0,0,0,0.75);
 	border-radius:7px;
 	border:solid 1px #000;
 	color:#ffffff;
+	text-align:left;
 }
 #overlay .exit_button{
 	width:25px;
@@ -63,6 +65,28 @@
 }
 #overlay .exit_button:hover{
 	background: url('../img/close-x_hover.png') no-repeat;
+}
+#overlay div{
+	float:left;
+	padding:0px 0px 0px 30px;
+	width:100%;
+}
+#overlay div.name {
+	font-size:30px;
+	padding:60px 0px 30px 0px;
+	text-align:center;
+	text-shadow:1px 1px 1px #000;
+}
+#overlay div h2, h3{
+	padding:10px 0px 0px 0px;
+	margin:0px;
+	display:block;
+	font-size:20px;
+	line-height:1;
+	width:150px;
+}
+#overlay div h2{
+	padding-top:30px;
 }
 #overlay .origin{
 	position:absolute;
